@@ -112,7 +112,7 @@ jobs:
         uses: imranismail/setup-kustomize@v1
       - run: |
           cd argocd/apps/restaurant-backend/develop
-          kustomize edit set image ghcr.io/$GITHUB_ACTOR:${GITHUB_REF}
+          kustomize edit set image ghcr.io/$GITHUB_REPOSITORY:${GITHUB_REF}
           git add .
           git config --global user.email "devops@elgallonegroec.com"
           git config --global user.name "Github Actions"

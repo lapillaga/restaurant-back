@@ -114,5 +114,7 @@ jobs:
           cd argocd/apps/restaurant-backend/prod
           kustomize edit set image ghcr.io/$GITHUB_ACTOR:${GITHUB_SHA}
           git add .
+          git config --global user.email "devops@elgallonegroec.com"
+          git config --global user.name "Github Actions"
           git commit -m "Set `app` image tag to `${GITHUB_SHA}`"
           git push

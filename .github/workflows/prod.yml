@@ -97,5 +97,22 @@ jobs:
       - name: Build and tag docker image
         run: |
           docker build . --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
-          docker run ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
           docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+  deploy-to-prod:
+    needs: push-docker-image
+    name: Deploy to Prod with Git OPS repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Git Ops Repo
+        uses: actions/checkout@v2
+        with:
+          repository: lapillaga/gallon-ops
+          token: ${{ secrets.CR_PAT }}
+      - name: Apply Kustomize to change image tag
+        uses: imranismail/setup-kustomize@v1
+      - run: |
+          cd argocd/apps/restaurant-backend/prod
+          kustomize edit set image ghcr.io/$GITHUB_ACTOR:${GITHUB_SHA}
+          git add .
+          git commit -m "Set `app` image tag to `${GITHUB_SHA}`"
+          git push

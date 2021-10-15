@@ -108,9 +108,9 @@ jobs:
         with:
           repository: lapillaga/gallon-ops
           token: ${{ secrets.CR_PAT }}
-      - name: Apply Kustomize and Push Image Tag
+      - name: Apply Kustomize
         uses: imranismail/setup-kustomize@v1
-        run: |
+      - run: |
           cd argocd/apps/restaurant-backend/prod
           kustomize edit set image ghcr.io/$GITHUB_ACTOR:${GITHUB_SHA}
           git add .

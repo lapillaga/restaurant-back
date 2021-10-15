@@ -116,5 +116,5 @@ jobs:
           git add .
           git config --global user.email "devops@elgallonegroec.com"
           git config --global user.name "Github Actions"
-          git commit -m "Set new image tag to ${GITHUB_SHA}"
+          git commit -m "Set new image tag to ${GITHUB_SHA} in PROD"
           git push

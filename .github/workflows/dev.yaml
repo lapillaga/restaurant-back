@@ -1,11 +1,11 @@
-name: Deploy App To Prod Environment
+name: Deploy App To Develop Environment
 on:
   push:
     branches:
-      - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
 jobs:
   tests:
     name: Unit tests
@@ -96,8 +96,8 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
       - name: Build and tag docker image
         run: |
-          docker build . --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
-          docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+          docker build . --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF
+          docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_REF
   deploy:
     needs: push-docker-image
     name: Deploy to Prod with Git OPS repo
@@ -111,10 +111,10 @@ jobs:
       - name: Apply Kustomize and Push Image Tag
         uses: imranismail/setup-kustomize@v1
         run: |
-          cd argocd/apps/restaurant-backend/prod
-          kustomize edit set image ghcr.io/$GITHUB_ACTOR:${GITHUB_SHA}
+          cd argocd/apps/restaurant-backend/develop
+          kustomize edit set image ghcr.io/$GITHUB_ACTOR:${GITHUB_REF}
           git add .
           git config --global user.email "devops@elgallonegroec.com"
           git config --global user.name "Github Actions"
-          git commit -m "Set new image tag to ${GITHUB_SHA}"
+          git commit -m "Set new version with commit ${GITHUB_SHA}"
           git push

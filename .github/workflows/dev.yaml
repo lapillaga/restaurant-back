@@ -111,7 +111,7 @@ jobs:
       - name: Apply Kustomize and Push Image Tag
         uses: imranismail/setup-kustomize@v1
       - run: |
-          cd argocd/apps/restaurant-backend/develop
+          cd argocd/apps/restaurant-backend/dev
           kustomize edit set image ghcr.io/$GITHUB_REPOSITORY:${GITHUB_SHA}
           git add .
           git config --global user.email "devops@elgallonegroec.com"

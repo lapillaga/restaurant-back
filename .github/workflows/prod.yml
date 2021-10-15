@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Set up Java JDK
         uses: actions/setup-java@v1
         with:
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Set up Java JDK
         uses: actions/setup-java@v1
         with:
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Set up Java JDK
         uses: actions/setup-java@v1
         with:
@@ -77,3 +77,25 @@ jobs:
         with:
           name: artifact
           path: target/*.jar
+          retention-days: 5
+  push-docker-image:
+    needs: build
+    name: Push docker container to Github Container Registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Download JAR file
+        uses: actions/download-artifact@v2
+        with:
+          name: artifact
+      - name: Login to Github Container Registry
+        run: |
+          echo $CR_PAT | docker login ghcr.io -u lapillaga --password-stdin
+        env:
+          CR_PAT: ${{ secrets.CR_PAT }}
+      - name: Build and tag docker image
+        run: |
+          docker build . --tag ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+          docker run ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+          docker push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
